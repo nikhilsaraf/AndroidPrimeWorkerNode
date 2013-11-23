@@ -1,0 +1,6 @@
+*.class
+*.DS_Store
+Android/*.class
+Server/*.class
+Android/*.DS_Store
+Server/*.class
