@@ -1,6 +1,8 @@
 package com.nikhilsaraf.distributed_primes.android;
 
 import java.util.LinkedHashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import android.app.Activity;
@@ -58,6 +60,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     private SystemUiHider mSystemUiHider;
     
     private AbstractPrimeGenerator primeGenerator;
+    private ExecutorService primeExecutor;
+    
     private TableLayout tableView;
     private Button buttonFindFirstNPrimes;
     private Button buttonFindNextPrime;
@@ -91,6 +95,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 //        // once loaded content view, we want to initiate sieve
 //        this.primeGenerator = new SievePrimeGenerator();
         this.primeGenerator = new DividingPrimeGenerator();
+        primeExecutor = Executors.newSingleThreadExecutor();
         
         tableView = (TableLayout) findViewById(R.id.tableView);
         buttonFindFirstNPrimes = (Button) findViewById(R.id.button_find_first_n_primes);
@@ -310,20 +315,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		AsyncTask<Object, Object, Object> task = new AsyncTask<Object, Object, Object>() {
 			@Override
 			protected Object doInBackground(Object... params) {
-				long timeLastSlept = System.currentTimeMillis();
 				for (int i = 0; i < N; i++) {
-					// sleep every 50 cycles so
-					long timeNow;
-					if ((timeNow = System.currentTimeMillis()) - timeLastSlept >= AbstractPrimeGenerator.yieldEveryMillisPrimeGenerator) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException ie) {
-							logger.warning(ie.toString());
-						} finally {
-							timeLastSlept = timeNow;
-						}
-					}
-//					logger.info("Generating a new prime in Executor Service thread");
+					logger.info("Generating a new prime in Executor Service thread");
 					primeGenerator.getNextPrime();
 				}
 				return null;
@@ -339,7 +332,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		    }
 		};
 		
-		task.execute(new Object[]{});
+		// need min api level of 11 to use executeOnExecutor
+		task.executeOnExecutor(primeExecutor, new Object[]{}); //.execute(new Object[]{});
 	}
 
 	private void alertGeneratorRunning() {
@@ -357,13 +351,14 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 				.setPositiveButton("Continue",
 					  new DialogInterface.OnClickListener() {
 						    public void onClick(DialogInterface dialog, int id) {
-						    	// do nothing
+						    	logger.info("continued prime generation after dialog");
 						    	dialog.cancel();
 						    }
 					  })
 				.setNegativeButton("Stop Current Run",
 					  new DialogInterface.OnClickListener() {
 						    public void onClick(DialogInterface dialog,int id) {
+						    	logger.info("canceled prime generation after dialog");
 						    	cancelGeneratingPrimes();
 						    	// TODO need to send lastFullyChecked value to server
 						    	dialog.cancel();

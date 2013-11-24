@@ -14,12 +14,6 @@ public abstract class AbstractPrimeGenerator {
     // the result data structure
     protected final List<Long> primesFound;
     
-    // yields the background thread every millis, so that we do not hog cpu resources.
-    // this should happen automatically as it is run in the background, but that is not
-    // happening for some reason, and not worth trying to debug now as other things to do;
-    // need to focus on completion.
-    public static final long yieldEveryMillisPrimeGenerator = 5000;
-    
     // the state variable
     private volatile Boolean isRunning;
     // the state variable
