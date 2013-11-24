@@ -1,11 +1,11 @@
 package com.nikhilsaraf.distributed_primes.android;
 
 import java.util.LinkedHashSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
@@ -191,17 +192,54 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 			if (primeGenerator.isRunning()) {
 				alertGeneratorRunning();
 			} else {
-				final long numberOfPrimesToFind = 10;	// TODO get from input
-				
-				// if input succeeded
-				primeGenerator.setIsRunning();
-				
-				// we want to start from scratch 
-				clearUITable();
-				findPrimes(0, numberOfPrimesToFind);
+				getInputN();
+//				final long numberOfPrimesToFind = getInputN();	// TODO get from input
+//				
+//				// if input succeeded
+//				primeGenerator.setIsRunning();
+//				
+//				// we want to start from scratch 
+//				clearUITable();
+//				findPrimes(0, numberOfPrimesToFind);
 			}
 		}
 	};
+	
+	private void getInputN() {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setMessage("Enter N:");
+		alertDialogBuilder.setTitle("Find first N Primes");
+		final EditText edit = new EditText(this);
+		edit.setText("20");
+		alertDialogBuilder.setView(edit);
+
+		// set dialog message
+		alertDialogBuilder
+				.setCancelable(true)
+				.setPositiveButton("Done",
+					  new DialogInterface.OnClickListener() {
+						    public void onClick(DialogInterface dialog, int id) {
+								// get user input and set it to result
+								// edit text
+						    	Integer numberOfPrimesToFind = Integer.parseInt(edit.getText().toString());
+							    
+								primeGenerator.setIsRunning();
+								
+								// we want to start from scratch 
+								clearUITable();
+								findPrimes(0, numberOfPrimesToFind);
+						    }
+					  })
+				.setNegativeButton("Cancel",
+					  new DialogInterface.OnClickListener() {
+						    public void onClick(DialogInterface dialog,int id) {
+						    	dialog.cancel();
+						    }
+					  });
+
+		// create alert dialog
+		alertDialogBuilder.create().show();
+	}
 	
 	private void clearUITable() {
 		uiVisiblePrimes.clear();
