@@ -31,7 +31,7 @@ public abstract class AbstractPrimeGenerator {
      * 
      * @return
      */
-    protected abstract Long getNextPrime();
+    protected abstract void generateNextPrime();
     
     public List<Long> getPrimesFound() {
     	return primesFound;

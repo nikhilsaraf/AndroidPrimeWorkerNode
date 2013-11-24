@@ -147,10 +147,10 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     
     @Override
     public void onReceivePrime(Long prime) {
-    	addPrimtToTable(prime);
+    	addPrimeToTable(prime);
     }
 
-	private void addPrimtToTable(Long prime) {
+	private void addPrimeToTable(Long prime) {
 		if (!this.uiVisiblePrimes.contains(prime)) {
     		logger.info("Received prime from prime generator thread: " + prime + " (was added to UI)");
     		
@@ -285,11 +285,11 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		}
 	}
 	
-	private void addAllPrimesToTable() {
-		for (Long prime : primeGenerator.getPrimesFound()) {
-			addPrimtToTable(prime);
-		}
-	}
+//	private void addAllPrimesToTable() {
+//		for (Long prime : primeGenerator.getPrimesFound()) {
+//			addPrimeToTable(prime);
+//		}
+//	}
 	
 	private void initializeTextViewPoints() {
 		final LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -310,7 +310,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 			} else {
 				primeGenerator.setIsRunning();
 				// find 1 more prime
-				findPrimes(uiVisiblePrimes.size(), uiVisiblePrimes.size() + 1);
+				int currentPrimesInView = uiVisiblePrimes.size();
+				findPrimes(currentPrimesInView, currentPrimesInView + 1);
 			}
 		}
 	};
@@ -335,7 +336,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 			protected Object doInBackground(Object... params) {
 				for (int i = 0; i < N; i++) {
 //					logger.info("Generating a new prime in Executor Service thread");
-					primeGenerator.getNextPrime();
+					primeGenerator.generateNextPrime();
 					publishProgress(Integer.valueOf(i));
 				}
 				return null;
@@ -356,7 +357,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		        super.onPostExecute(result);
 
 		        // reload full table so that 
-//		        reloadTableWithAllPrimes();
+//		        clearUITable();
+//		        addAllPrimesToTable();
 		        
 		        // only add those that have not been added
 		        // this will take care of anything happening in the background during distributed processing help
@@ -369,11 +371,6 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		
 		// need min api level of 11 to use executeOnExecutor
 		task.executeOnExecutor(primeExecutor, new Object[]{}); //.execute(new Object[]{});
-	}
-	
-	private void reloadTableWithAllPrimes() {
-		clearUITable();
-		addAllPrimesToTable();
 	}
 
 	private void alertGeneratorRunning() {
