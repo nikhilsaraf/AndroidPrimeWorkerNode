@@ -25,10 +25,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int button_find_first_n_primes=0x7f070003;
-        public static final int button_find_next_prime=0x7f070004;
-        public static final int fullscreen_content_controls=0x7f070002;
-        public static final int tableRow1=0x7f070001;
+        public static final int button_find_first_n_primes=0x7f070002;
+        public static final int button_find_next_prime=0x7f070003;
+        public static final int fullscreen_content_controls=0x7f070001;
         public static final int tableView=0x7f070000;
     }
     public static final class layout {

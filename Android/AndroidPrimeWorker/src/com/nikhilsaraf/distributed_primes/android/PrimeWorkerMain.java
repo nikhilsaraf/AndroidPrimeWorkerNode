@@ -3,6 +3,7 @@ package com.nikhilsaraf.distributed_primes.android;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -27,6 +28,7 @@ import com.nikhilsaraf.distributed_primes.android.util.SystemUiHider;
  * @see SystemUiHider
  */
 public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate {
+	private static final Logger logger = Logger.getLogger(PrimeWorkerMain.class.getSimpleName());
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -172,6 +174,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     
     @Override
     public void onReceivePrime(Long prime) {
+    	logger.info("Received prime from prime generator thread: " + prime);
     	if (!this.uiVisiblePrimes.contains(prime)) {
     		final int number = this.uiVisiblePrimes.size() + 1;	// +1 because we are adding it after this
     		this.uiVisiblePrimes.add(prime);
@@ -262,6 +265,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 			primeGenExecutorService.submit(new Runnable() {
 				@Override
 				public void run() {
+					logger.info("Generating a new prime in Executor Service thread");
 					primeGenerator.generatePrime();
 				}
 			});
@@ -277,6 +281,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 	}
 
 	private void alertGeneratorRunning() {
+		logger.info("showed alert because the prime generator is running and we cannot start a new generating action");
 		// TODO - need to give a popup saying taht ew are already running and suggest the option of canceling the run from the top
 		// buttons
 	}
