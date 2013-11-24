@@ -14,27 +14,16 @@ public abstract class AbstractPrimeGenerator {
     // the result data structure
     protected final List<Long> primesFound;
     
-    // the result data structure
-    protected final PrimeGeneratorDelegate delegate;
-    
     // the state variable
     private volatile Boolean isRunning;
     // the state variable
     private volatile Boolean hardCancelPressed;
     
-    public AbstractPrimeGenerator(PrimeGeneratorDelegate delegate) {
+    public AbstractPrimeGenerator() {
     	// use a LinkedList to avoid allocating a whole bunch of memory up front
         primesFound = new LinkedList<Long>();
         isRunning = Boolean.valueOf(false);
         hardCancelPressed = Boolean.valueOf(false);
-    	this.delegate = delegate;
-    }
-    
-    public void generatePrime() {
-		final Long newPrime = getNextPrime();
-    	if (newPrime != null) {
-    		delegate.onReceivePrime(newPrime);
-    	}
     }
 
     /**

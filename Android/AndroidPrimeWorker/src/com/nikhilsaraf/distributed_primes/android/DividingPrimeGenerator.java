@@ -8,8 +8,8 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
      * Creates a new prime generator generate prime numbers.
      * 
      */
-    public DividingPrimeGenerator(PrimeGeneratorDelegate delegate) {
-    	super(delegate);
+    public DividingPrimeGenerator() {
+    	super();
     	// set it to 1 so we do not consider it as a prime.
         this.lastNumberFullyChecked = 1;
     }
