@@ -1,6 +1,5 @@
 package com.nikhilsaraf.distributed_primes.android;
 
-
 class DividingPrimeGenerator extends AbstractPrimeGenerator {
 	// the state variable
     private long lastNumberFullyChecked;
@@ -40,6 +39,12 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
                     break;
                 }
         	}
+			
+			if (primesFound.isEmpty()) {
+				primesFound.add(currentNumber);
+	        	lastNumberFullyChecked = currentNumber;
+	        	return currentNumber;
+			}
 		}
 		
 		// this will only happen if we cancel. But at least we would have made some headway by updating the last number fully checked
