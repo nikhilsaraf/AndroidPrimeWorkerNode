@@ -3,6 +3,7 @@ package com.nikhilsaraf.distributed_primes.android;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import android.app.Activity;
@@ -30,12 +31,14 @@ import com.nikhilsaraf.distributed_primes.android.util.SystemUiHider;
  * @see SystemUiHider
  */
 public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate {
-	private static final Logger logger = Logger.getLogger(PrimeWorkerMain.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(PrimeWorkerMain.class.getSimpleName() + "_Tag");
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
     private static final boolean AUTO_HIDE = true;
+    
+    private static final AtomicBoolean dialogOpen = new AtomicBoolean(false);
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -232,17 +235,22 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 								// we want to start from scratch 
 								clearUITable();
 								findPrimes(0, numberOfPrimesToFind);
+								dialogOpen.set(false);
 						    }
 					  })
 				.setNegativeButton("Cancel",
 					  new DialogInterface.OnClickListener() {
 						    public void onClick(DialogInterface dialog,int id) {
+						    	dialogOpen.set(false);
 						    	dialog.cancel();
 						    }
 					  });
 
 		// create alert dialog
-		alertDialogBuilder.create().show();
+		if (!dialogOpen.get()) {
+			alertDialogBuilder.create().show();
+			dialogOpen.set(true);
+		}
 	}
 	
 	private void clearUITable() {
@@ -384,6 +392,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 					  new DialogInterface.OnClickListener() {
 						    public void onClick(DialogInterface dialog, int id) {
 						    	logger.info("continued prime generation after dialog");
+						    	dialogOpen.set(false);
 						    	dialog.cancel();
 						    }
 					  })
@@ -393,12 +402,16 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 						    	logger.info("canceled prime generation after dialog");
 						    	cancelGeneratingPrimes();
 						    	// TODO need to send lastFullyChecked value to server
+						    	dialogOpen.set(false);
 						    	dialog.cancel();
 						    }
 					  });
 
 		// create alert dialog
-		alertDialogBuilder.create().show();
+		if (!dialogOpen.get()) {
+			alertDialogBuilder.create().show();
+			dialogOpen.set(true);
+		}
 	}
     
     /* ************************************************************************************ */
