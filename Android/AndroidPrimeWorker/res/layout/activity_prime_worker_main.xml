@@ -11,14 +11,24 @@
          TextureView, etc.
     -->
 
-    <TableLayout
-        android:id="@+id/tableView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:stretchColumns="0,1"
-        android:keepScreenOn="true" >
-    </TableLayout>
+	<ScrollView
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:scrollbars="none"
+	    android:paddingTop="80dp"
+	    android:paddingBottom="150dp"
+	    >
+	    <TableLayout
+	        android:id="@+id/tableView"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:gravity="top"
+	        android:stretchColumns="0,1"
+	        android:keepScreenOn="true"
+	     	>
+	    </TableLayout>
+	</ScrollView>
     <!--
          This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows.
