@@ -54,9 +54,11 @@ public class NetworkSynchronizer {
 		    @Override
 		    public void onDataChange(DataSnapshot snapshot) {
 		    	final Long newTotalPoints = snapshot.getValue(Long.class);
-		    	logger.info("You earned points! New total: " + newTotalPoints);
-		    	// set points locally
-		    	singleton.initializingWorker.setPoints(newTotalPoints);
+		    	if (newTotalPoints != null) {
+			    	logger.info("You earned points! New total: " + newTotalPoints);
+			    	// set points locally
+			    	singleton.initializingWorker.setPoints(newTotalPoints);
+		    	}
 		    }
 
 			@Override
