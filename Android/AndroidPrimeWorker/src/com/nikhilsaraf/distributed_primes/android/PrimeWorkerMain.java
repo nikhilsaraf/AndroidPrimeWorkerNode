@@ -70,6 +70,8 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     private Button buttonFindNextPrime;
     private TextView textViewPoints;
     
+    private String username = "test1";
+    
     private LinkedHashSet<Long> uiVisiblePrimes;
     private Long pointsAccummulated;
     
@@ -105,7 +107,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 
         // initialize network synchronizer (need to do this before we add any click listeners so that all updates are appropriately
         // passed on)
-        NetworkSynchronizer.get("test1", primeGenerator, this);
+        NetworkSynchronizer.get(username, primeGenerator, this);
         
         tableView = (TableLayout) findViewById(R.id.tableView);
         buttonFindFirstNPrimes = (Button) findViewById(R.id.button_find_first_n_primes);
@@ -160,10 +162,15 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     public void setPoints(final Long newTotalPoints) {
     	synchronized (pointsAccummulated) {
 	    	if (newTotalPoints > pointsAccummulated) {
-	    		final int delayMillis = 1500;
-	    		// update UI 
-	    		textViewPoints.setTextColor(Color.BLUE);
-	    		textViewPoints.setText("You earned +" + (newTotalPoints - pointsAccummulated) + " points for calculating a prime!");
+	    		final int delayMillis = 1000;
+	    		// update UI
+	    		if (pointsAccummulated == 0 && newTotalPoints > 1) {
+		    		textViewPoints.setTextColor(Color.BLUE);
+		    		textViewPoints.setText("Welcome back " + username + ". Your " + newTotalPoints + " points are still here!");
+	    		} else {
+		    		textViewPoints.setTextColor(Color.BLUE);
+		    		textViewPoints.setText("You earned +" + (newTotalPoints - pointsAccummulated) + " points for calculating a prime!");
+	    		}
 	
 	    		// update new points data structure
 	    		pointsAccummulated = newTotalPoints;
