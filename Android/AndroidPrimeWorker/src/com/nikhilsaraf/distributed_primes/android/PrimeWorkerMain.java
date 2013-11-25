@@ -105,7 +105,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 
         // initialize network synchronizer (need to do this before we add any click listeners so that all updates are appropriately
         // passed on)
-        NetworkSynchronizer.get("test1", primeGenerator, this);
+//        NetworkSynchronizer.get("test1", primeGenerator, this);
         
         tableView = (TableLayout) findViewById(R.id.tableView);
         buttonFindFirstNPrimes = (Button) findViewById(R.id.button_find_first_n_primes);
@@ -403,9 +403,10 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		        primeGenerator.markQueueEmpty();
 		    }
 		};
-		
+	
 		// need min api level of 11 to use executeOnExecutor
-		task.executeOnExecutor(primeExecutor, new Object[]{}); //.execute(new Object[]{});
+		task.executeOnExecutor(primeExecutor, new Object[]{});
+//		task.execute(new Object[]{});
 	}
 
 	private void alertGeneratorRunning() {

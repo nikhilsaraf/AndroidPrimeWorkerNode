@@ -126,21 +126,21 @@ public class NetworkSynchronizer {
 	 * @return total points for the user
 	 */
 	public static void savePrime(final int nValueOfPrime, Long prime) {
-		if (singleton == null) {
-			throw new IllegalStateException("Network synchrnizer not initialized!");
+		if (singleton != null) {
+			singleton.primeListRef.child(String.valueOf(nValueOfPrime)).setValue(prime, new CompletionListener() {
+				public void onComplete(FirebaseError error, Firebase arg1) {
+					if (error != null) {
+						logger.info("Someone beat you to it! No points for you. errorMessage: " + error.getMessage());
+					} else {
+						final long newTotalPoints = singleton.initializingWorker.getPoints() + (nValueOfPrime * nValueOfPrime);
+						// update points on server
+						singleton.userPointsRef.setValue(newTotalPoints);
+					}
+				}
+			});
+		} else {
+			logger.warning("NetworkSynchronizer not initialized so we skipped publishing the prime!");
 		}
-		
-		singleton.primeListRef.child(String.valueOf(nValueOfPrime)).setValue(prime, new CompletionListener() {
-			public void onComplete(FirebaseError error, Firebase arg1) {
-				if (error != null) {
-		            logger.info("Someone beat you to it! No points for you. errorMessage: " + error.getMessage());
-		        } else {
-		        	final long newTotalPoints = singleton.initializingWorker.getPoints() + (nValueOfPrime * nValueOfPrime);
-		        	// update points on server
-		        	singleton.userPointsRef.setValue(newTotalPoints);
-		        }
-			}
-		});
 	}
 //	
 //	/**
