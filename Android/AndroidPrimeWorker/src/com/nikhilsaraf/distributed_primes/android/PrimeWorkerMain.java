@@ -158,25 +158,30 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     }
     
     public void setPoints(final Long newTotalPoints) {
-    	if (newTotalPoints > pointsAccummulated) {
-    		// update UI
-    		textViewPoints.setText("You earned +" + (newTotalPoints - pointsAccummulated) + " points for calculating a prime!");
-
-    		// update new points data structure
-    		pointsAccummulated = newTotalPoints;
-    		
-    		// enqueue a action to update the points later on after a bit
-    		final Runnable textTimer = new Runnable() {
-    			@Override
-    			public void run() {
-    				// set to pointsAccummulated rather than newTotalPoints because this may get executed a few times so we want the latest value, not a blur
-    				textViewPoints.setText("Total Contribution Points: " + pointsAccummulated);
-    			}
-    		};
-    		
-    		final Handler textUpdateHandler = new Handler();
-    		// runnable will execute after 1 second
-    		textUpdateHandler.postDelayed(textTimer, 1000);
+    	synchronized (pointsAccummulated) {
+	    	if (newTotalPoints > pointsAccummulated) {
+	    		final int delayMillis = 1500;
+	    		// update UI 
+	    		textViewPoints.setTextColor(Color.BLUE);
+	    		textViewPoints.setText("You earned +" + (newTotalPoints - pointsAccummulated) + " points for calculating a prime!");
+	
+	    		// update new points data structure
+	    		pointsAccummulated = newTotalPoints;
+	    		
+	    		// enqueue a action to update the points later on after a bit
+	    		final Runnable textTimer = new Runnable() {
+	    			@Override
+	    			public void run() {
+	    				// set to pointsAccummulated rather than newTotalPoints because this may get executed a few times so we want the latest value, not a blur
+	    				textViewPoints.setTextColor(Color.DKGRAY);
+	    				textViewPoints.setText("Total Contribution Points: " + pointsAccummulated);
+	    			}
+	    		};
+	    		
+	    		final Handler textUpdateHandler = new Handler();
+	    		// runnable will execute after 1 second
+				textUpdateHandler.postDelayed(textTimer, delayMillis);
+	    	}
     	}
     }
     

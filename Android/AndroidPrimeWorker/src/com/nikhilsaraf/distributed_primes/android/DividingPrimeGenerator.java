@@ -21,7 +21,7 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
     @Override
     public void appendPrimeFromDistributedHelper(Long nValueOfPrime, Long prime) {
     	synchronized (primesFound) {
-    		if (prime > primesFound.get(primesFound.size() - 1) && nValueOfPrime > primesFound.size()) {
+    		if (primesFound.size() < nValueOfPrime && (primesFound.isEmpty() || prime > primesFound.get(primesFound.size() - 1))) {
     			this.primesFound.add(prime);
     			this.lastNumberFullyChecked = prime;
     			// update so that it carries forward in the prime generation in what may be being executed by another thread
