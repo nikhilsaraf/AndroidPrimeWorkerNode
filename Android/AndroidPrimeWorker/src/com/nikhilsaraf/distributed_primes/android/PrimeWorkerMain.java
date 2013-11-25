@@ -9,18 +9,24 @@ import java.util.logging.Logger;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.nikhilsaraf.distributed_primes.android.util.SystemUiHider;
 
@@ -113,7 +119,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         textViewMaxPrime = (TextView) findViewById(R.id.textView_max_prime);
         
         resetTableView();
-        initTextView(textViewPoints, "Total Contribution Points: 0");
+        initTextView(textViewPoints, "Your Total Contribution Points: 0");
         initTextView(textViewMaxPrime, "Android Distr. Prime Hunt has found first 0 primes. Biggest = ?");
         
         /* ************************************************************************************ */
@@ -173,6 +179,19 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         buttonFindNextPrime.setOnClickListener(findNextPrimeClickListener);
     }
     
+	private void userEnteredName(final EditText edit) {
+		username = edit.getText().toString().trim();
+		// save to prefs 
+		Editor prefEditor = getPreferences(MODE_PRIVATE).edit();
+		prefEditor.putString(USER_PREF_KEY, username);
+		prefEditor.commit();
+		
+		dialogOpen.set(false);
+		
+		// this allows us to wait for the user input indefinitely
+		continueInitialization();
+	}
+
     /*
      * Takes username from user and finishes off initialization after that.
      */
@@ -180,32 +199,49 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 		logger.info("getting username from user");
 		
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		alertDialogBuilder.setMessage("Welcome to the Distributed Prime Generatation Worker Node! Please choose a one-time username/handle for your points");
-		alertDialogBuilder.setTitle("Let's start earning points!");
+		alertDialogBuilder.setMessage("Welcome to the Distributed Prime Worker! Please choose your username for the network");
+		
 		final EditText edit = new EditText(this);
 		edit.setText(username);
+		
 		alertDialogBuilder.setView(edit);
 
 		// set dialog message
-		alertDialogBuilder
-				.setCancelable(true)
+		alertDialogBuilder 
+				.setCancelable(false)			// we need a username (uniqueId) for this to be cool.
 				.setPositiveButton("Done",
 					  new DialogInterface.OnClickListener() {
 						    public void onClick(DialogInterface dialog, int id) {
-						    	username = edit.getText().toString();
-						    	// save to prefs 
-						    	getPreferences(MODE_PRIVATE).edit().putString(USER_PREF_KEY, username);
-							    
-								dialogOpen.set(false);
-								
-								// this allows us to wait for the user input indefinitely
-								continueInitialization();
+						    	if (edit.getText().toString().trim().length() > 0) {
+									userEnteredName(edit);
+								}
 						    }
 					  });
 
+		final AlertDialog alertD = alertDialogBuilder.create();
+
+		edit.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// if not empty and last character is enter
+				if (s.toString().trim().length() > 0) {
+					char ch = s.charAt(s.length() - 1);
+					if (ch == '\n') {
+						userEnteredName(edit);
+						alertD.dismiss();
+					}
+				}
+			}
+		});
+		
 		// create alert dialog
 		if (!dialogOpen.get()) {
-			alertDialogBuilder.create().show();
+			alertD.show();
 			dialogOpen.set(true);
 		}
 	}
@@ -236,7 +272,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 	    			public void run() {
 	    				// set to pointsAccummulated rather than newTotalPoints because this may get executed a few times so we want the latest value, not a blur
 	    				textViewPoints.setTextColor(Color.DKGRAY);
-	    				textViewPoints.setText("Total Contribution Points: " + pointsAccummulated);
+	    				textViewPoints.setText("Your Total Contribution Points: " + pointsAccummulated);
 	    			}
 	    		};
 	    		
@@ -252,7 +288,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     	if (nValue > 10000) {
     		textViewMaxPrime.setText("Largest Global Worker Prime: " + largestPrimeFound + "(N=" + nValue + ")");
     	} else {
-    		textViewMaxPrime.setText("Distr. Prime Hunt found " + nValue + " primes. Biggest = " + largestPrimeFound);
+    		textViewMaxPrime.setText("Distr. Prime Hunt found " + nValue + " primes.\nBiggest = " + largestPrimeFound);
     	}
     }
     
