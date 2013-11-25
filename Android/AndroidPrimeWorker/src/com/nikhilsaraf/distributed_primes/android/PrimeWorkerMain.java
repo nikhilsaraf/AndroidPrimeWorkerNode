@@ -70,16 +70,63 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     private Button buttonFindNextPrime;
     private TextView textViewPoints;
     
-    private String username = "test1";
+    private String username = "Human1";
+    private static final String USER_PREF_KEY = "USER_PREF_KEY";
     
     private LinkedHashSet<Long> uiVisiblePrimes;
     private Long pointsAccummulated;
     
+    private void doUserNameDialogForm() {
+		logger.info("getting username from user");
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setMessage("Welcome to the Distributed Prime Generatation Worker Node! Please choose a one-time username/handle for your points");
+		alertDialogBuilder.setTitle("Let's start earning points!");
+		final EditText edit = new EditText(this);
+		edit.setText(username);
+		alertDialogBuilder.setView(edit);
+
+		// set dialog message
+		alertDialogBuilder
+				.setCancelable(true)
+				.setPositiveButton("Done",
+					  new DialogInterface.OnClickListener() {
+						    public void onClick(DialogInterface dialog, int id) {
+						    	username = edit.getText().toString();
+						    	// save to prefs 
+						    	getPreferences(MODE_PRIVATE).edit().putString(USER_PREF_KEY, username);
+							    
+								dialogOpen.set(false);
+						    }
+					  });
+
+		// create alert dialog
+		if (!dialogOpen.get()) {
+			alertDialogBuilder.create().show();
+			dialogOpen.set(true);
+		}
+	}
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         setContentView(R.layout.activity_prime_worker_main);
+        
+        String prefUser = getPreferences(MODE_PRIVATE).getString(USER_PREF_KEY, USER_PREF_KEY);
+        if (prefUser.equals(USER_PREF_KEY)) {
+        	// first time user, need to ask for username
+        	doUserNameDialogForm();
+        	
+        	// need to block on the async dialog box task. we don't want to initialize session/network with wrong user name
+        	while (dialogOpen.get()) {
+        		try {
+        			Thread.sleep(100);
+        		} catch (Exception e) {
+        			// do nothing
+        		}
+        	}
+        }
 
         /* While it is more computationally efficient to use the sieve, it is more taxing on memory.
          * Also, the sieve needs us to define the maximum number to check for primes up front (because we cannot
@@ -113,7 +160,6 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         buttonFindFirstNPrimes = (Button) findViewById(R.id.button_find_first_n_primes);
         buttonFindNextPrime = (Button) findViewById(R.id.button_find_next_prime);
         textViewPoints = (TextView) findViewById(R.id.textView_points);
-        // TODO implement cancel button
         
         resetTableView();
         initializeTextViewPoints();
@@ -424,7 +470,6 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 	private void alertGeneratorRunning() {
 		logger.info("showed alert because the prime generator is running and we cannot start a new generating action");
 		
-		// TODO - need to give a popup saying taht ew are already running and suggest the option of canceling the run from the top
 		// buttons
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setMessage("Currently processing primes...");
@@ -446,7 +491,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 						    public void onClick(DialogInterface dialog,int id) {
 						    	logger.info("canceled prime generation after dialog");
 						    	cancelGeneratingPrimes();
-						    	// TODO need to send lastFullyChecked value to server
+
 						    	dialogOpen.set(false);
 						    	dialog.cancel();
 						    }
