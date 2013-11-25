@@ -31,6 +31,9 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
     			synchronized (distributedHelperUpdated) {
     				distributedHelperUpdated = true;
     			}
+    		} else if (primesFound.size() == nValueOfPrime) {
+    			// when in solo mode, we also want this to update!
+    			maxPrimeUpdater.updateMaxPrime(nValueOfPrime, prime);
     		}
 		}
     }
