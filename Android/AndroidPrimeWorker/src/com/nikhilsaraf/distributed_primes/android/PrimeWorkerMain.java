@@ -103,9 +103,6 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         this.primeGenerator = new DividingPrimeGenerator();
         primeExecutor = Executors.newSingleThreadExecutor();
 
-        resetTableView();
-        initializeTextViewPoints();
-        
         // initialize network synchronizer (need to do this before we add any click listeners so that all updates are appropriately
         // passed on)
         NetworkSynchronizer.get("test1", primeGenerator, this);
@@ -115,6 +112,9 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         buttonFindNextPrime = (Button) findViewById(R.id.button_find_next_prime);
         textViewPoints = (TextView) findViewById(R.id.textView_points);
         // TODO implement cancel button
+        
+        resetTableView();
+        initializeTextViewPoints();
         
         // add click listeners for the buttons
         buttonFindFirstNPrimes.setOnClickListener(findFirstNPrimesClickListener);
