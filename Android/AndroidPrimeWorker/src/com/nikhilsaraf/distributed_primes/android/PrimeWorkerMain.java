@@ -69,6 +69,7 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
     private Button buttonFindFirstNPrimes;
     private Button buttonFindNextPrime;
     private TextView textViewPoints;
+    private TextView textViewMaxPrime;
     
     private String username = "Human1";
     private static final String USER_PREF_KEY = "USER_PREF_KEY";
@@ -160,9 +161,11 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
         buttonFindFirstNPrimes = (Button) findViewById(R.id.button_find_first_n_primes);
         buttonFindNextPrime = (Button) findViewById(R.id.button_find_next_prime);
         textViewPoints = (TextView) findViewById(R.id.textView_points);
+        textViewMaxPrime = (TextView) findViewById(R.id.textView_max_prime);
         
         resetTableView();
-        initializeTextViewPoints();
+        initTextView(textViewPoints, "Total Contribution Points: 0");
+        initTextView(textViewMaxPrime, "Android Distr. Prime Hunt has found first 0 primes. Biggest = ?");
         
         // add click listeners for the buttons
         buttonFindFirstNPrimes.setOnClickListener(findFirstNPrimesClickListener);
@@ -235,6 +238,15 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 	    		// runnable will execute after 1 second
 				textUpdateHandler.postDelayed(textTimer, delayMillis);
 	    	}
+    	}
+    }
+    
+    public void updateMaxPrime(Long nValue, Long largestPrimeFound) {
+    	// if too many primes than it won't fit on the screen
+    	if (nValue > 10000) {
+    		textViewMaxPrime.setText("Largest Global Worker Prime: " + largestPrimeFound + "(N=" + nValue + ")");
+    	} else {
+    		textViewMaxPrime.setText("Android Distr. Prime Hunt has found first " + nValue + " primes. Biggest = " + largestPrimeFound);
     	}
     }
     
@@ -384,11 +396,11 @@ public class PrimeWorkerMain extends Activity implements PrimeGeneratorDelegate 
 //		}
 //	}
 	
-	private void initializeTextViewPoints() {
+	private void initTextView(TextView tView, String message) {
 		final LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		textViewPoints.setLayoutParams(lp);
-		textViewPoints.setBackgroundColor(Color.WHITE);
-		textViewPoints.setText("Total Contribution Points: " + 0);
+		tView.setLayoutParams(lp);
+		tView.setBackgroundColor(Color.WHITE);
+		tView.setText(message);
 	}
 	
     /**

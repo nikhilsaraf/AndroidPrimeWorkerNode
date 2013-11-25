@@ -30,13 +30,34 @@
             	>
            </TextView>
     </LinearLayout>
+    
+    <LinearLayout
+            android:id="@+id/linear_layout2"
+            style="?buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:paddingTop="140dp"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent" >
+            <TextView
+                android:id="@+id/textView_max_prime"
+                style="?buttonBarStyle"
+            	android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:layout_gravity="top|center_horizontal"
+            	android:text="@string/prime_biggest_prime_number_message"
+            	>
+           </TextView>
+    </LinearLayout>
 
 	<ScrollView
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:scrollbars="none"
-	    android:paddingTop="160dp"
-	    android:paddingBottom="150dp"
+	    android:paddingTop="175dp"
+	    android:paddingBottom="100dp"
 	    >
 	    <TableLayout
 	        android:id="@+id/tableView"

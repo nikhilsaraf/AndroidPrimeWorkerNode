@@ -71,7 +71,7 @@ public class NetworkSynchronizer {
 		public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
 			final Long newPrime = snapshot.getValue(Long.class);
 			final Long nValueOfPrime = Long.valueOf(snapshot.getName());
-			primeGenerator.appendPrimeFromDistributedHelper(nValueOfPrime, newPrime);
+			primeGenerator.appendPrimeFromDistributedHelper(nValueOfPrime, newPrime, initializingWorker);
 	    }
 		
 		@Override
