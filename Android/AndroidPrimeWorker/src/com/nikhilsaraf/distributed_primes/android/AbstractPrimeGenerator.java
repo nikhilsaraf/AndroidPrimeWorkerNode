@@ -37,6 +37,8 @@ public abstract class AbstractPrimeGenerator {
     	return primesFound;
     }
     
+    public abstract void appendPrimeFromDistributedHelper(Long nValueOfPrime, Long prime);
+    
     protected void hardCancel() {
     	synchronized (hardCancelPressed) {
     		hardCancelPressed = true;

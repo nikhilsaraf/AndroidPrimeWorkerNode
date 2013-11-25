@@ -18,6 +18,20 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
         this.lastNumberFullyChecked = 1;
     }
     
+    @Override
+    public void appendPrimeFromDistributedHelper(Long nValueOfPrime, Long prime) {
+    	synchronized (primesFound) {
+    		if (prime > primesFound.get(primesFound.size() - 1) && nValueOfPrime > primesFound.size()) {
+    			this.primesFound.add(prime);
+    			this.lastNumberFullyChecked = prime;
+    			// update so that it carries forward in the prime generation in what may be being executed by another thread
+    			synchronized (distributedHelperUpdated) {
+    				distributedHelperUpdated = true;
+    			}
+    		}
+		}
+    }
+    
 	@Override
 	protected void generateNextPrime() {
 		// iterate through all the numbers we have
@@ -26,7 +40,12 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
 		// some primes can take really long to generate. So we may want to stop with the hit of a Cancel Button.
 		while (!wasHardCancelPressed()) {
 			// user iterator to avoid ConcurrentModificationException
-			final Iterator<Long> iter = primesFound.iterator();
+			final Iterator<Long> iter;
+			final int findingNthPrime;
+			synchronized(primesFound) {
+				iter = primesFound.iterator();
+				findingNthPrime = primesFound.size() + 1;
+			}
 			while (iter.hasNext()) {
 				Long prime = iter.next();
 				// make it more sensitive to the cancel button
@@ -39,10 +58,7 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
                 	// Note: It is critical to add to the list before we update lastNumberFullyChecked because if the thread was to get stuck
                 	// because of scheduling before that, and say we had a sweeper to constantly synchronize with the server, it would mark the
                 	// currentNumber as not a prime because it is not in the prime list!
-                	synchronized(primesFound) {
-                		primesFound.add(currentNumber);
-                		lastNumberFullyChecked = currentNumber;
-                	}
+                	updatePrimeAndLastNumberChecked(findingNthPrime, currentNumber);
                 	return;
                 }
                 // if it divides, then not a prime.
@@ -64,10 +80,7 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
         	}
 			
 			if (primesFound.isEmpty()) {
-				synchronized(primesFound) {
-            		primesFound.add(currentNumber);
-            		lastNumberFullyChecked = currentNumber;
-            	}
+				updatePrimeAndLastNumberChecked(findingNthPrime, currentNumber);
 	        	return;
 			}
 			
@@ -81,5 +94,14 @@ class DividingPrimeGenerator extends AbstractPrimeGenerator {
 		
 		// this will only happen if we cancel. But at least we would have made some headway by updating the last number fully checked
 		return;
+	}
+
+	private void updatePrimeAndLastNumberChecked(int nValueOfPrime, Long currentNumber) {
+		synchronized (primesFound) {
+			primesFound.add(currentNumber);
+			lastNumberFullyChecked = currentNumber;
+		}
+		// update distributed network with newly found prime
+		NetworkSynchronizer.savePrime(nValueOfPrime, currentNumber);
 	}
 }
