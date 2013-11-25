@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"
-            android:paddingTop="60dp"
+            android:paddingTop="100dp"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"
-            android:paddingTop="80dp"
+            android:paddingTop="130dp"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
@@ -56,8 +56,8 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:scrollbars="none"
-	    android:paddingTop="120dp"
-	    android:paddingBottom="140dp"
+	    android:paddingTop="160dp"
+	    android:paddingBottom="120dp"
 	    >
 	    <TableLayout
 	        android:id="@+id/tableView"
