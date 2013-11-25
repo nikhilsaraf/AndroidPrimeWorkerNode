@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Android Distributed Prime Worker</string>
+    <string name="app_name">Nikhil\'s Prime Distr. Worker</string>
     <string name="button_find_first_n_primes">Find First N Primes</string>
     <string name="button_find_next_prime">Find Next Prime</string>
     <string name="prime_contribuition_message">You just got +1 point for contributing a prime!</string>
