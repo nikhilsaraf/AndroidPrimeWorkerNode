@@ -109,7 +109,7 @@ public class NetworkSynchronizer {
 	 */
 	public static NetworkSynchronizer get(String username, AbstractPrimeGenerator primeGenerator, PrimeWorkerMain initializingWorker) {
 		if (singleton == null) {
-			synchronized(singleton) {
+			synchronized (NetworkSynchronizer.class) {
 				if (singleton == null) {
 					// set singleton
 					singleton = new NetworkSynchronizer(username, primeGenerator, initializingWorker);
